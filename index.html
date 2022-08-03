@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="shortcut icon" href="https://am3pap001files.storage.live.com/y4pY4WWfQNvgvicPVy1BLs3chBaFWIY8uESCUF0ga8aMhpMCfncX1x5W2raRHvRta6OCiBdhUxXvZMR-TXz4sa56trZWZsX7rNJZf3hQBb-2LRNhGDPbFwDru_PJutUdI0sZLqQ4t8MYJ1iS2WGfqdrU_D4Sc2G7T9N02JtqbIDPJqz1f2Zx3VBwmIxrnP0sOBycB75FB_KdXaqKmiqgLysvX875nyqwbrLKabfSFNZpGU/logo%201.ico?psid=1&width=1366&height=2048" type="image/x-icon">
+        <link rel="shortcut icon" href="images/tetris.png" type="image/png">
         <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
         <title>Tetris</title>
 
@@ -23,12 +23,16 @@
             }
 
             .bg {
+                min-width: 1920px;
+                min-height: 1080px;
                 z-index: -1;
             }
 
             .bg > img {
                 width: 100vw;
                 height: 100vh;
+                min-width: 1920px;
+                min-height: 1080px;
             }
 
             .tetris-block {
@@ -37,6 +41,7 @@
                 height: 100vh;
                 display: flex;
                 justify-content: center;
+                transform-origin: 0 center;
             }
 
             .tetris {
@@ -46,7 +51,6 @@
                 background-color: #000;
                 box-shadow: 0 0 2vh rgba(0, 0, 0, .5);
                 border-radius: 1vh;
-                transform: translateX(calc(98vh * -0.14));
             }
 
             .score {
@@ -65,7 +69,6 @@
                 align-items: center;
                 border-radius: 0 0 1vh 0;
                 color: #fff;
-                transform: translate(calc(98vh * -0.39 - 0.3vh), 0.7vh);
                 font-size: 4.9vh;
             }
 
@@ -84,7 +87,6 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                visibility: visible;
                 background-color: #000;
                 border: 1vh solid #333;
                 border-radius: 0 1vh 1vh 0;
@@ -248,24 +250,14 @@
                     width: 30%;
                 }
             }
-
-            @media screen and (max-width: 1000px) {
-                .tetris {
-                    transform: translateX(0);
-                }
-
-                .inner-score {
-                    transform: translate(calc(98vh * -0.25 - 0.2vh), 0.7vh);
-                }
-
-                .inner-next-figure {
-                    visibility: hidden;
-                }
-            }
         </style>
     </head>
 
     <body ontouchmove='moveSwipe(event)'></body>
+        <script>
+            var innerScoreTranslate1, innerScoreTranslate2
+        </script>
+
         <div class="change-size">
             <div class="change-size-content">
                 <div class="change-size-text">Choose the size</div>
@@ -300,7 +292,9 @@
         </div>
 
         <div class="pause"></div>
-        <div class="bg"></div>
+        <div class="bg">
+            <img src="images/bg.jpg">
+        </div>
 
         <div class="tetris-block">
             <canvas class="tetris"></canvas>
@@ -417,6 +411,11 @@ q, w, clicking on the cube - cubes rotation`)
 
             var arenaWidth = 12
             var arenaHeight = 20
+            var scale = 1
+
+            innerScoreTranslate1 = 38.52
+            innerScoreTranslate2 = 24.7
+            innerScoreTranslate3 = 4.9
 
             var arena
             var cubeSize
@@ -434,36 +433,38 @@ q, w, clicking on the cube - cubes rotation`)
             canv.width = canv.height / 1.66667
             ctx.scale(canv.width / arenaWidth, canv.height / arenaHeight)
 
-            if (navigator.onLine) {
-                var img = document.createElement('img')
-                img.setAttribute('src', 'https://cs8.pikabu.ru/post_img/big/2016/03/19/9/1458401393139637137.jpg')
-                document.querySelector('.bg').appendChild(img)
-            }
-
-            else {
-                var firstColor = Math.round(Math.random() * 255).toString(16) + Math.round(Math.random() * 255).toString(16) + Math.round(Math.random() * 255).toString(16)
-                if (firstColor.length < 6) {
-                    firstColor = firstColor + '0' * (6 - firstColor.length)
-                }
-
-                var secondColor = Math.round(Math.random() * 255).toString(16) + Math.round(Math.random() * 255).toString(16) + Math.round(Math.random() * 255).toString(16)
-                if (secondColor.length < 6) {
-                    secondColor = secondColor + '0' * (6 - secondColor.length)
-                }
-
-                bg.style.background = `linear-gradient(-45deg, #${firstColor}, #${secondColor})`
-            }
-
             scoreHeight = 196 / arenaHeight
             innerScore.style.width = scoreHeight + 'vh'
             innerScore.style.height = scoreHeight + 'vh'
             innerScore.style.borderRadius = `0 0 ${20 / arenaHeight}vh 0`
 
-            if (window.innerWidth > 1000) {
-                innerScore.style.transform = `translate(calc(${-43.42 + scoreHeight / 2}vh), 0.7vh)`
+            if (window.innerWidth >= window.innerHeight * 0.9) {
+                document.querySelector('.tetris').style.transform = 'translateX(calc(98vh * -0.14))'
+                document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate1}vh, 0.9vh)`
+                document.querySelector('.inner-next-figure').style.visibility = 'visible'
             }
+
             else {
-                innerScore.style.transform = `translate(calc(${-29.6 + scoreHeight / 2}vh), 0.7vh)`
+                document.querySelector('.tetris').style.transform = 'translateX(0)'
+                document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate2}vh, 0.9vh)`
+                document.querySelector('.inner-next-figure').style.visibility = 'hidden'
+            }
+
+            const tetrisBlock = document.querySelector('.tetris-block')
+            tetrisBlock.style.minWidth = window.innerHeight * 0.6 + 'px'
+
+            if (window.innerWidth <= window.innerHeight * 0.6) {
+                tetrisBlock.style.transform = `scale(${window.innerWidth / (window.innerHeight * 0.6)})`
+                innerScore.style.transform = `translateX(calc(-50vw + ${innerScoreTranslate3}vh))`
+            }
+
+            else {
+                tetrisBlock.style.removeProperty('transform')
+
+                if (window.innerWidth >= window.innerHeight * 0.9)
+                    document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate1}vh, 0.9vh)`
+                else
+                    document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate2}vh, 0.9vh)`
             }
 
             function restart() {
@@ -476,11 +477,30 @@ q, w, clicking on the cube - cubes rotation`)
                 innerScore.style.height = scoreHeight + 'vh'
                 innerScore.style.borderRadius = `0 0 ${20 / arenaHeight}vh 0`
 
-                if (window.innerWidth > 1000) {
-                    innerScore.style.transform = `translate(calc(${-43.42 + scoreHeight / 2}vh), 0.7vh)`
+                if (window.innerWidth >= window.innerHeight * 0.9) {
+                    document.querySelector('.tetris').style.transform = 'translateX(calc(98vh * -0.14))'
+                    document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate1}vh, 0.9vh)`
+                    document.querySelector('.inner-next-figure').style.visibility = 'visible'
                 }
+
                 else {
-                    innerScore.style.transform = `translate(calc(${-29.6 + scoreHeight / 2}vh), 0.7vh)`
+                    document.querySelector('.tetris').style.transform = 'translateX(0)'
+                    document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate2}vh, 0.9vh)`
+                    document.querySelector('.inner-next-figure').style.visibility = 'hidden'
+                }
+
+                if (window.innerWidth <= window.innerHeight * 0.6) {
+                    tetrisBlock.style.transform = `scale(${window.innerWidth / (window.innerHeight * 0.6)})`
+                    innerScore.style.transform = `translateX(calc(-50vw + ${innerScoreTranslate3}vh))`
+                }
+
+                else {
+                    tetrisBlock.style.removeProperty('transform')
+
+                    if (window.innerWidth >= window.innerHeight * 0.9)
+                        document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate1}vh, 0.9vh)`
+                    else
+                        document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate2}vh, 0.9vh)`
                 }
 
                 pause = false
@@ -505,6 +525,24 @@ q, w, clicking on the cube - cubes rotation`)
 
                 gameOver.style.display = 'flex'
                 gameOver.style.opacity = '.8'
+
+                if (width == 9 && height == 15) {
+                    innerScoreTranslate1 = 36.77
+                    innerScoreTranslate2 = 22.9
+                    innerScoreTranslate3 = 6.6
+                }
+
+                else if (width == 12 && height == 20) {
+                    innerScoreTranslate1 = 38.52
+                    innerScoreTranslate2 = 24.7
+                    innerScoreTranslate3 = 4.9
+                }
+
+                else if (width == 15 && height == 25) {
+                    innerScoreTranslate1 = 39.27
+                    innerScoreTranslate2 = 25.5
+                    innerScoreTranslate3 = 3.9
+                }
             }
 
             function arenaSweep(rowCount, time = 0) {
@@ -717,15 +755,8 @@ q, w, clicking on the cube - cubes rotation`)
                 else {
                     for (dir = 0; dir > dirs; dir--) {
                         player.pos.x--
-
-                        if (
-                            collide(arena, player) || (
-                                player.pos.x <= 1 &&
-                                player.pos.y <= 1
-                            )
-                        ) {
+                        if (collide(arena, player))
                             player.pos.x++
-                        }
                     }
                 }
             }
@@ -856,7 +887,6 @@ q, w, clicking on the cube - cubes rotation`)
                 lastTime = time
 
                 dropCounter += deltaTime
-                console.log(dropCounter)
                 if (dropCounter > dropInterval) {
                     playerDrop(1)
                     lastY = player.pos.y + 1
@@ -972,7 +1002,7 @@ q, w, clicking on the cube - cubes rotation`)
             function moveSwipe(event) {
                 if (!pause && !isFalling) {
                     var touch = event.touches[0].clientX
-                    touch = touch - (window.innerWidth / 2 - canv.width / 2)
+                    touch = touch - (window.innerWidth - canv.width) / 2
                     move = Math.round(touch / (canv.width / arenaWidth))
 
                     if (collide(arena, player)) {
@@ -1056,17 +1086,41 @@ q, w, clicking on the cube - cubes rotation`)
                 }
             })
 
-            window.addEventListener('resize', event => {
+            window.addEventListener('resize', () => {
                 scoreHeight = 196 / arenaHeight
+
+                const innerScore = document.querySelector('.inner-score')
                 innerScore.style.width = scoreHeight + 'vh'
                 innerScore.style.height = scoreHeight + 'vh'
                 innerScore.style.borderRadius = `0 0 ${20 / arenaHeight}vh 0`
 
-                if (window.innerWidth > 1000) {
-                    innerScore.style.transform = `translate(calc(${-43.42 + scoreHeight / 2}vh), 0.7vh)`
+                if (window.innerWidth >= window.innerHeight * 0.9) {
+                    document.querySelector('.tetris').style.transform = 'translateX(calc(98vh * -0.14))'
+                    document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate1}vh, 0.9vh)`
+                    document.querySelector('.inner-next-figure').style.visibility = 'visible'
                 }
+
                 else {
-                    innerScore.style.transform = `translate(calc(${-29.6 + scoreHeight / 2}vh), 0.7vh)`
+                    document.querySelector('.tetris').style.transform = 'translateX(0)'
+                    document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate2}vh, 0.9vh)`
+                    document.querySelector('.inner-next-figure').style.visibility = 'hidden'
+                }
+
+                const tetrisBlock = document.querySelector('.tetris-block')
+                tetrisBlock.style.minWidth = window.innerHeight * 0.6 + 'px'
+
+                if (window.innerWidth <= window.innerHeight * 0.6) {
+                    tetrisBlock.style.transform = `scale(${window.innerWidth / (window.innerHeight * 0.6)})`
+                    innerScore.style.transform = `translateX(calc(-50vw + ${innerScoreTranslate3}vh))`
+                }
+
+                else {
+                    tetrisBlock.style.removeProperty('transform')
+
+                    if (window.innerWidth >= window.innerHeight * 0.9)
+                        document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate1}vh, 0.9vh)`
+                    else
+                        document.querySelector('.inner-score').style.transform = `translate(-${innerScoreTranslate2}vh, 0.9vh)`
                 }
             })
 
